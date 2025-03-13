@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require('../db/Connection');
 
 const Users = sequelize.define("Usuario", {
-  id: {
+  id_usuario: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
@@ -11,7 +11,7 @@ const Users = sequelize.define("Usuario", {
     type: DataTypes.STRING(50),
     allowNull: false,
   },
-  contraseña: {
+  contrasena: {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
