@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require('../db/Connection');
+const sequelize = require('../db/conexion');
 
 const Users = sequelize.define("Usuario", {
   id_usuario: {
@@ -28,7 +28,7 @@ const Users = sequelize.define("Usuario", {
     defaultValue: false,
   },
 }, {
-  tableName: "usuarios",
+  tableName: "usuario",
   timestamps: false,
 });
 

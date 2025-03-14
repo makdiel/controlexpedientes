@@ -3,7 +3,7 @@ const {Sequelize} =require('sequelize')
 const sequelize = new Sequelize(
     'gestionexpedientes',//nombre de la base de datos
     'root',
-    'Admin123',
+    'Javier1993',
     {
         host:'localhost', //host 127.0.0.1
         port:3306, //puerto 3306
