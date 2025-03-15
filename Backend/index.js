@@ -7,7 +7,7 @@ const sequelize = require("./db/conexion");
 const Users = require("./models/Users");
 const Expedientes = require("./models/Expedientes");
 const Historial = require("./models/Historial");
-require("./models/asociaciones"); // Importar asociaciones
+require("./models/asociaciones"); // Importa asociaciones
 
 // Inicializar Express
 const app = express();
@@ -16,10 +16,10 @@ app.use(cors());
 
 // Sincronizar base de datos antes de levantar el servidor
 sequelize
-  .sync({ alter: true }) // Usa `force: true` si deseas reiniciar la base de datos (¡cuidado!)
+  .sync({ alter: true }) 
   .then(() => {
     console.log("📦 Base de datos sincronizada correctamente");
-    app.listen(5000, () => console.log("🚀 Servidor ejecutándose en puerto 5000"));
+    app.listen(5000, () => console.log("🚀 Servidor ejecutandose en puerto 5000"));
   })
   .catch((error) => console.error("⚠️ Error al sincronizar la base de datos:", error));
 
@@ -34,7 +34,7 @@ app.get("/users", async (req, res) => {
     res.json(usuarios);
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
-    res.status(500).json({ error: "Ocurrió un error en la petición." });
+    res.status(500).json({ error: "Ocurrio un error en la peticion." });
   }
 });
 
@@ -49,11 +49,11 @@ app.get("/expedientes", async (req, res) => {
     res.json(expedientes);
   } catch (error) {
     console.error("Error al obtener expedientes:", error);
-    res.status(500).json({ error: "Ocurrió un error en la petición." });
+    res.status(500).json({ error: "Ocurrio un error en la peticion." });
   }
 });
 
-// Crear expediente con validación de duplicados
+// Crear expediente con validacion de duplicados
 app.post("/expedientes", async (req, res) => {
   try {
     const { numero_expediente, nombre_establecimiento, region_sanitaria, departamento } = req.body;
@@ -71,7 +71,7 @@ app.post("/expedientes", async (req, res) => {
       return res.status(409).json({ error: "El expediente ya existe" });
     }
 
-    // Crear expediente con fecha automática
+    // Crear expediente con fecha automatica
     const expediente = await Expedientes.create({
       numero_expediente,
       nombre_establecimiento,
@@ -83,12 +83,13 @@ app.post("/expedientes", async (req, res) => {
     res.status(201).json(expediente);
   } catch (error) {
     console.error("Error al crear expediente:", error);
-    res.status(500).json({ error: "Ocurrió un error al crear el expediente" });
+    res.status(500).json({ error: "Ocurrio un error al crear el expediente" });
   }
 });
 
 
 //---------------------------------Consulta de Historial-----------------------------------------//
+// por numero_expediente
 app.get("/historial/expedientes/:numero", async (req, res) => {
   try {
     const { numero } = req.params;
