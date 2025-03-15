@@ -1,27 +1,20 @@
 const express = require("express");
 const cors = require("cors");
-const { Op, Sequelize } = require("sequelize");
-const sequelize = require("./db/conexion");
 
 // Importar modelos y asociaciones
 const Users = require("./models/Users");
 const Expedientes = require("./models/Expedientes");
 const Historial = require("./models/Historial");
-require("./models/asociaciones"); // Importa asociaciones
+
 
 // Inicializar Express
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Sincronizar base de datos antes de levantar el servidor
-sequelize
-  .sync({ alter: true }) 
-  .then(() => {
-    console.log("📦 Base de datos sincronizada correctamente");
-    app.listen(5000, () => console.log("🚀 Servidor ejecutandose en puerto 5000"));
-  })
-  .catch((error) => console.error("⚠️ Error al sincronizar la base de datos:", error));
+app.listen(5000, () => {
+  console.log("ejecutando en puerto 5000");
+});
 
 //--------------------------------------Usuarios--------------------------------------//
 // Obtener usuarios
@@ -35,6 +28,38 @@ app.get("/users", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
     res.status(500).json({ error: "Ocurrio un error en la peticion." });
+  }
+});
+
+// Login de usuario con comparación simple de contraseña
+app.post("/users/login", async (req, res) => {
+  const { nombre_usuario, contrasena } = req.body;
+
+  try {
+    // Buscar usuario por nombre de usuario
+    const usuario = await Users.findOne({ where: { nombre_usuario } });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    // Comparar contraseñas sin hasheo
+    if (contrasena !== usuario.contrasena) {
+      return res.status(401).json({ mensaje: "Credenciales incorrectas." });
+    }
+
+    // Responder con los datos del usuario, incluyendo la unidad
+    res.json({
+      id_usuario: usuario.id_usuario,
+      nombre_completo: usuario.nombre_completo,
+      nombre_usuario: usuario.nombre_usuario,
+      unidad_area: usuario.unidad_area,  // 🔹 Devuelve la unidad del usuario
+      administrador: usuario.administrador,
+    });
+
+  } catch (error) {
+    console.error("Error en el login:", error);
+    res.status(500).json({ error: "Ocurrió un error en la autenticación." });
   }
 });
 
@@ -53,158 +78,111 @@ app.get("/expedientes", async (req, res) => {
   }
 });
 
-// Crear expediente con validacion de duplicados
+// Obtener expediente por numero_expediente
+app.get("/expedientes/:numero_expediente", async (req, res) => {
+  try {
+    const { numero_expediente } = req.params;
+    const expediente = await Expedientes.findOne({ where: { numero_expediente } });
+
+    if (!expediente) {
+      return res.status(404).json({ mensaje: "Expediente no encontrado." });
+    }
+
+    res.json(expediente);
+  } catch (error) {
+    console.error("Error al obtener expediente:", error);
+    res.status(500).json({ error: "Ocurrió un error en la petición." });
+  }
+});
+
+// Crear un nuevo expediente
 app.post("/expedientes", async (req, res) => {
   try {
-    const { numero_expediente, nombre_establecimiento, region_sanitaria, departamento } = req.body;
+    const { numero_expediente, nombre_establecimiento, region_sanitaria, departamento, unidad_area, id_usuario } = req.body;
 
-    if (!numero_expediente || !nombre_establecimiento || !region_sanitaria || !departamento) {
-      return res.status(400).json({ error: "Todos los campos son obligatorios" });
+    // Validar que los campos requeridos estén presentes
+    if (!numero_expediente || !nombre_establecimiento || !region_sanitaria || !departamento || !unidad_area || !id_usuario) {
+      return res.status(400).json({ mensaje: "Todos los campos son obligatorios." });
     }
 
-    // Verificar si ya existe un expediente con el mismo numero_expediente
-    const expedienteExistente = await Expedientes.findOne({
-      where: { numero_expediente }
-    });
-
+    // Verificar si el expediente ya existe
+    const expedienteExistente = await Expedientes.findOne({ where: { numero_expediente } });
     if (expedienteExistente) {
-      return res.status(409).json({ error: "El expediente ya existe" });
+      return res.status(400).json({ mensaje: "El número de expediente ya está registrado." });
     }
 
-    // Crear expediente con fecha automatica
-    const expediente = await Expedientes.create({
+    // Crear el nuevo expediente
+    const nuevoExpediente = await Expedientes.create({
       numero_expediente,
       nombre_establecimiento,
       region_sanitaria,
       departamento,
+      unidad_area,
+      estado: true, // Por defecto, el expediente está activo
       fecha_creacion: new Date(),
+      id_usuario
     });
 
-    res.status(201).json(expediente);
+    res.status(201).json({ mensaje: "Expediente creado exitosamente.", expediente: nuevoExpediente });
   } catch (error) {
     console.error("Error al crear expediente:", error);
-    res.status(500).json({ error: "Ocurrio un error al crear el expediente" });
+    res.status(500).json({ error: "Ocurrió un error en la petición." });
   }
 });
 
-
-//---------------------------------Consulta de Historial-----------------------------------------//
-// por numero_expediente
-app.get("/historial/expedientes/:numero", async (req, res) => {
+//editar expediente
+app.put("/expedientes/:id", async (req, res) => {
   try {
-    const { numero } = req.params;
+    const { id } = req.params;
+    const {
+      numero_expediente,
+      nombre_establecimiento,
+      region_sanitaria,
+      departamento,
+      unidad_area,
+      estado,
+      id_usuario
+    } = req.body;
 
-    // Buscar expediente
-    const expediente = await Expedientes.findOne({
-      where: { numero_expediente: numero },
-      attributes: [
-        "id_expediente",
-        "numero_expediente",
-        "nombre_establecimiento",
-        "region_sanitaria",
-        "departamento",
-        "fecha_creacion",
-      ],
-    });
-
+    // Buscar el expediente por ID
+    const expediente = await Expedientes.findByPk(id);
     if (!expediente) {
-      return res.status(404).json({ mensaje: "Expediente no encontrado" });
+      return res.status(404).json({ mensaje: "Expediente no encontrado." });
     }
 
-    // Obtener la última fecha de transferencia
-    const ultimaTransferencia = await Historial.findOne({
-      where: { id_expediente: expediente.id_expediente },
-      attributes: [[sequelize.fn("MAX", sequelize.col("fecha_transferencia")), "ultima_fecha"]],
+    // Actualizar los campos del expediente
+    await expediente.update({
+      numero_expediente,
+      nombre_establecimiento,
+      region_sanitaria,
+      departamento,
+      unidad_area,
+      estado,
+      id_usuario
     });
 
-    if (!ultimaTransferencia || !ultimaTransferencia.dataValues.ultima_fecha) {
-      return res.status(404).json({ mensaje: "No hay historial para este expediente" });
-    }
-
-    const historial = await Historial.findOne({
-      where: {
-        id_expediente: expediente.id_expediente,
-        fecha_transferencia: ultimaTransferencia.dataValues.ultima_fecha,
-      },
-      attributes: [
-        "fecha_transferencia",
-        [sequelize.literal("CASE WHEN estado = 1 THEN 'Activo' ELSE 'Inactivo' END"), "estado_expediente"],
-      ],
-      include: [
-        {
-          model: Users,
-          as: "usuarioAnterior",
-          attributes: ["nombre_usuario", "nombre_completo", ["unidad_area", "sale_de_area_unidad"]],
-        },
-        {
-          model: Users,
-          as: "usuarioNuevo",
-          attributes: ["nombre_usuario", "nombre_completo", ["unidad_area", "entra_a_area_unidad"]],
-        },
-      ],
-    });
-
-    if (!historial) {
-      return res.status(404).json({ mensaje: "No hay registros recientes en el historial" });
-    }
-
-    res.json({ expediente, historial });
+    res.json({ mensaje: "Expediente actualizado correctamente.", expediente });
   } catch (error) {
-    console.error("Error al obtener historial:", error);
-    res.status(500).json({ mensaje: "Error en el servidor", error });
+    console.error("Error al actualizar expediente:", error);
+    res.status(500).json({ error: "Ocurrió un error en la petición." });
   }
 });
 
-// Obtener historial general
-app.get("/historial/expedientes", async (req, res) => {
+
+
+
+//---------------------------------Historial-----------------------------------------//
+// Obtener Historial
+app.get("/Historial", async (req, res) => {
   try {
-    const historial = await Historial.findAll({
-      attributes: [
-        "id_expediente",
-        "fecha_transferencia",
-        [sequelize.literal("CASE WHEN estado = 1 THEN 'Activo' ELSE 'Inactivo' END"), "estado_expediente"],
-      ],
-      include: [
-        {
-          model: Expedientes,
-          attributes: [
-            "numero_expediente",
-            "nombre_establecimiento",
-            "region_sanitaria",
-            "departamento",
-            "fecha_creacion",
-          ],
-        },
-        {
-          model: Users,
-          as: "usuarioAnterior",
-          attributes: ["nombre_usuario", "nombre_completo", ["unidad_area", "sale_de_area_unidad"]],
-        },
-        {
-          model: Users,
-          as: "usuarioNuevo",
-          attributes: ["nombre_usuario", "nombre_completo", ["unidad_area", "entra_a_area_unidad"]],
-        },
-      ],
-      where: {
-        fecha_transferencia: {
-          [Op.eq]: sequelize.literal(`(
-            SELECT MAX(h2.fecha_transferencia)
-            FROM historial h2
-            WHERE h2.id_expediente = historial.id_expediente
-          )`),
-        },
-      },
-      order: [["fecha_transferencia", "DESC"]],
-    });
-
+    const historial = await Historial.findAll();
     if (!historial.length) {
-      return res.status(404).json({ mensaje: "No hay historial registrado" });
+      return res.status(404).json({ mensaje: "No hay registros de historial." });
     }
-
     res.json(historial);
   } catch (error) {
-    console.error("Error al obtener el historial general:", error);
-    res.status(500).json({ mensaje: "Error en el servidor", error });
+    console.error("Error al obtener historial:", error);
+    res.status(500).json({ error: "Ocurrio un error en la peticion." });
   }
 });
+
