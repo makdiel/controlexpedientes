@@ -95,6 +95,28 @@ app.get("/expedientes/:numero_expediente", async (req, res) => {
   }
 });
 
+// Obtener expediente por unidad_area
+app.get("/expedientes/unidad/:unidad", async (req, res) => {
+  try {
+    const { unidad } = req.params;
+
+    // Buscar expedientes por unidad_area
+    const expedientes = await Expedientes.findAll({
+      where: { unidad_area: unidad }
+    });
+
+    if (!expedientes.length) {
+      return res.status(404).json({ mensaje: "No hay expedientes en esta unidad." });
+    }
+
+    res.json(expedientes);
+  } catch (error) {
+    console.error("Error al obtener expedientes por unidad:", error);
+    res.status(500).json({ error: "Ocurrió un error en la petición." });
+  }
+});
+
+
 // Crear un nuevo expediente
 app.post("/expedientes", async (req, res) => {
   try {
@@ -168,12 +190,40 @@ app.put("/expedientes/:id", async (req, res) => {
   }
 });
 
+//transferir expediente
+app.put("/expedientes/transferir/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nueva_unidad, id_usuario } = req.body;
 
+    // Verificar si el expediente existe
+    const expediente = await Expedientes.findByPk(id);
+    if (!expediente) {
+      return res.status(404).json({ mensaje: "Expediente no encontrado." });
+    }
+
+    // Actualizar la unidad del expediente
+    expediente.unidad_area = nueva_unidad;
+    await expediente.save();
+
+    // Registrar la transferencia en el historial
+    await Historial.create({
+      id_expediente: id,
+      id_usuario: id_usuario,
+      comentario: `El Expediente #: ${expediente.numero_expediente} fue trasladado a la Unidad: ${nueva_unidad}`
+    });
+
+    res.json({ mensaje: "Expediente transferido correctamente." });
+  } catch (error) {
+    console.error("Error al transferir expediente:", error);
+    res.status(500).json({ error: "Ocurrió un error en la petición." });
+  }
+});
 
 
 //---------------------------------Historial-----------------------------------------//
 // Obtener Historial
-app.get("/Historial", async (req, res) => {
+app.get("/historial", async (req, res) => {
   try {
     const historial = await Historial.findAll();
     if (!historial.length) {
@@ -183,6 +233,47 @@ app.get("/Historial", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener historial:", error);
     res.status(500).json({ error: "Ocurrio un error en la peticion." });
+  }
+});
+
+//Historial por expediente
+// Ruta para obtener el historial de un expediente
+app.get("/historial/expediente/:numero_expediente", async (req, res) => {
+  try {
+    const { numero_expediente } = req.params;
+
+    // Buscar expediente por número
+    const expediente = await Expedientes.findOne({
+      where: { numero_expediente }
+    });
+
+    if (!expediente) {
+      return res.status(404).json({ mensaje: "Expediente no encontrado." });
+    }
+
+    // Obtener el historial del expediente sin alias
+    const historial = await Historial.findAll({
+      where: { id_expediente: expediente.id_expediente },
+      include: [
+        {
+          model: Expedientes, // Ya no usa alias
+          attributes: ["numero_expediente", "nombre_establecimiento"]
+        }
+      ]
+    });
+
+    res.json({
+      expediente: {
+        id_expediente: expediente.id_expediente,
+        numero_expediente: expediente.numero_expediente,
+        nombre: expediente.nombre_establecimiento
+      },
+      historial
+    });
+
+  } catch (error) {
+    console.error("Error al obtener el historial:", error);
+    res.status(500).json({ error: "Error interno del servidor al obtener el historial del expediente." });
   }
 });
 
