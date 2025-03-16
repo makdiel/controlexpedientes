@@ -2,55 +2,55 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../db/conexion");
 const Users = require("./Users");
 
-const Expedientes = sequelize.define("Expediente", {
-  id_expediente: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
+const Expedientes = sequelize.define(
+  "Expedientes",
+  {
+    id_expediente: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    numero_expediente: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    nombre_establecimiento: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    region_sanitaria: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    departamento: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    unidad_area: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    estado: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fecha_creacion: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    id_usuario: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
-  numero_expediente: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    unique: true
-  },
-  nombre_establecimiento: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  region_sanitaria: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  departamento: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  unidad_area: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  estado: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true // TRUE: en proceso (activo), FALSE: finalizado (inactivo)
-  },
-  fecha_creacion: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  id_usuario: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Users,
-      key: "id_usuario"
-    }
+  {
+    timestamps: false,
+    tableName: "expediente",
   }
-}, {
-  timestamps: false,
-  tableName: "expediente"
-});
+);
 
+// 📌 Relación con Usuarios
 Expedientes.belongsTo(Users, { foreignKey: "id_usuario" });
 
+// ✅ Exportamos sin definir relación con Historial aún
 module.exports = Expedientes;

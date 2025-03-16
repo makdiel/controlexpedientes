@@ -3,43 +3,42 @@ const sequelize = require("../db/conexion");
 const Users = require("./Users");
 const Expedientes = require("./Expedientes");
 
-const Historial = sequelize.define("Historial", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
+const Historial = sequelize.define(
+  "Historial",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    id_expediente: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    id_usuario: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    fecha_transferencia: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    comentario: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
-  id_expediente: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Expedientes,
-      key: "id_expediente"
-    }
-  },
-  id_usuario: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Users,
-      key: "id_usuario"
-    }
-  },
-  fecha_transferencia: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-  comentario: {
-    type: DataTypes.STRING(300),
-    allowNull: false
+  {
+    timestamps: false,
+    tableName: "historial",
   }
-}, {
-  timestamps: false,
-  tableName: "historial"
-});
+);
 
-Historial.belongsTo(Users, { foreignKey: "id_usuario" });
+// 📌 Relación con Expedientes
 Historial.belongsTo(Expedientes, { foreignKey: "id_expediente" });
 
-module.exports = Historial;
+// 📌 Relación con Usuarios
+Historial.belongsTo(Users, { foreignKey: "id_usuario" });
 
+// ✅ Exportamos el modelo corregido
+module.exports = Historial;

@@ -1,19 +1,32 @@
 const express = require("express");
 const cors = require("cors");
+const sequelize = require("./db/conexion"); // 📌 Importar conexión con la BD
 
-// Importar modelos y asociaciones
+// 📌 Importar modelos
 const Users = require("./models/Users");
 const Expedientes = require("./models/Expedientes");
 const Historial = require("./models/Historial");
 
+// 📌 Definir relaciones después de importar modelos
+Expedientes.hasMany(Historial, { foreignKey: "id_expediente" });
+Historial.belongsTo(Expedientes, { foreignKey: "id_expediente" });
+
+Historial.belongsTo(Users, { foreignKey: "id_usuario" });
+Users.hasMany(Historial, { foreignKey: "id_usuario" });
+
+// 📌 Sincronizar la base de datos (IMPORTANTE)
+sequelize.sync()
+  .then(() => console.log("Base de datos sincronizada correctamente"))
+  .catch((error) => console.error("Error al sincronizar BD:", error));
 
 // Inicializar Express
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Iniciar servidor
 app.listen(5000, () => {
-  console.log("ejecutando en puerto 5000");
+  console.log("Servidor ejecutándose en puerto 5000");
 });
 
 //--------------------------------------Usuarios--------------------------------------//
@@ -274,6 +287,37 @@ app.get("/historial/expediente/:numero_expediente", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener el historial:", error);
     res.status(500).json({ error: "Error interno del servidor al obtener el historial del expediente." });
+  }
+});
+
+//expedientes e historial por usuario
+app.get("/historial/expedientes/:id_usuario", async (req, res) => {
+  const { id_usuario } = req.params;
+
+  try {
+    const expedientes = await Expedientes.findAll({
+      where: { id_usuario }, // Filtra expedientes por usuario
+      include: [
+        {
+          model: Historial, // Incluye el historial de transferencias
+          include: [
+            {
+              model: Users, // Muestra el usuario que hizo la transferencia
+              attributes: ["id_usuario", "nombre_completo", "nombre_usuario"]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!expedientes.length) {
+      return res.status(404).json({ mensaje: "No hay expedientes asociados a este usuario." });
+    }
+
+    res.json(expedientes);
+  } catch (error) {
+    console.error("Error al obtener expedientes con historial:", error);
+    res.status(500).json({ error: "Error en la consulta.", error });
   }
 });
 
