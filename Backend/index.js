@@ -264,13 +264,17 @@ app.get("/historial/expediente/:numero_expediente", async (req, res) => {
       return res.status(404).json({ mensaje: "Expediente no encontrado." });
     }
 
-    // Obtener el historial del expediente sin alias
+    // Obtener el historial del expediente con datos del usuario
     const historial = await Historial.findAll({
       where: { id_expediente: expediente.id_expediente },
       include: [
         {
-          model: Expedientes, // Ya no usa alias
+          model: Expedientes, // Relación con Expedientes
           attributes: ["numero_expediente", "nombre_establecimiento"]
+        },
+        {
+          model: Users, // Relación con Usuarios
+          attributes: ["id_usuario", "nombre_completo", "nombre_usuario", "unidad_area"]
         }
       ]
     });
@@ -289,6 +293,7 @@ app.get("/historial/expediente/:numero_expediente", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor al obtener el historial del expediente." });
   }
 });
+
 
 //expedientes e historial por usuario
 app.get("/historial/expedientes/:id_usuario", async (req, res) => {
