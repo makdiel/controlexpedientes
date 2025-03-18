@@ -249,7 +249,7 @@ app.get("/historial", async (req, res) => {
   }
 });
 
-//Historial por expediente
+
 // Ruta para obtener el historial de un expediente
 app.get("/historial/expediente/:numero_expediente", async (req, res) => {
   try {
@@ -321,3 +321,35 @@ app.get("/historial/expedientes/:id_usuario", async (req, res) => {
   }
 });
 
+//historial detallado con datos del usuario y el expediente
+app.get("/historial/detallado", async (req, res) => {
+  try {
+      const historial = await Historial.findAll({
+          include: [
+              {
+                  model: Users, // 🔹 Sin `as`
+                  attributes: ["id_usuario", "nombre_completo", "nombre_usuario", "unidad_area"],
+              },
+              {
+                  model: Expedientes,
+                  attributes: [
+                      "id_expediente",
+                      "numero_expediente",
+                      "nombre_establecimiento",
+                      "region_sanitaria",
+                      "departamento",
+                      "unidad_area",
+                      "estado",
+                      "fecha_creacion",
+                  ],
+              },
+          ],
+          order: [["fecha_transferencia", "DESC"]],
+      });
+
+      return res.json(historial);
+  } catch (error) {
+      console.error("Error al obtener el historial detallado:", error);
+      return res.status(500).json({ error: "Ocurrió un error en la consulta." });
+  }
+});
