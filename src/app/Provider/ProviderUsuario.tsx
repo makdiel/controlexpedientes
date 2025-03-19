@@ -3,7 +3,9 @@ import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import { Usuario } from '../Models/Usuario'
 import { usuarioContext } from '../Context/UsuarioContext'
 import { useRouter } from 'next/navigation'
-//import { useRouter } from 'next/router';
+//import { usseRouter } from 'next/router';
+
+// Suponiendo que estás en una función o componente
 
 
 interface VistaReact {
@@ -13,6 +15,7 @@ export default function ProviderUsuario({ children }: VistaReact) {
 
   const [usuario, setUsuario] = useState<Usuario[]>([]);
   const router = useRouter();
+ // const ruta = usseRouter();
   //const [usuarioSeleccionado, setUsuarioSeleccionado]= useState()
 
 
@@ -73,7 +76,8 @@ export default function ProviderUsuario({ children }: VistaReact) {
       const data = await res.json();
 
       if (res.status === 200) {
-        router.push("/listaexpediente"); // Redirigir si las credenciales son correctas
+       // router.push("/listaexpediente"); // Redirigir si las credenciales son correctas
+        router.push(`/listaexpediente?us=${data.nombre_usuario}`);
         //router.push({ pathname: '/listaexpediente', query: { param1: unidad_area },  });
         console.log('Usuario logueado:' + res.status, data);
       }
@@ -191,10 +195,11 @@ export default function ProviderUsuario({ children }: VistaReact) {
   )
 }
 
-export function useUsuaarioContext() {
+export function useUsuarioContext() {
   return useContext(usuarioContext)
 }
+/*
 function then(arg0: (response: any) => any) {
   throw new Error('Function not implemented.')
-}
+}*/
 

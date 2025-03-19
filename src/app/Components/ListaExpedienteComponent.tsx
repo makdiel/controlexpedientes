@@ -1,16 +1,18 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistorialContext } from '../Provider/ProviderHistorial'
 import { useExpedienteContext } from '../Provider/ProviderExpediente'
 import { Expediente } from '../Models/Expediente'
-
+import { useSearchParams } from 'next/navigation'; //me sirve para recibir parametros
+import { Usuario } from '../Models/Usuario'
+/*
 interface ExpedienteLista{
     Expedientes: Expediente[]
     
-}
+}*/
 //{Expedientes}:ExpedienteLista
 export default function ListaExpedienteComponent() {
-  const { eliminarExpediente, actualizarExpediente,agregarExpediente,obtenerExpedientePorUnidad,expediente } = useExpedienteContext()
+  const { eliminarExpediente, actualizarExpediente,agregarExpediente,obtenerExpedientePorUnidad } = useExpedienteContext()
   const [id_expediente, setIdExpediente] = useState('')
   const [numeroExpediente, setNumeroExpediente] = useState('')
   const [nombre_establecimiento, setNombre_establecimiento] = useState('')
@@ -21,8 +23,15 @@ export default function ListaExpedienteComponent() {
   const [departamento, setDepartamento] = useState('')
   const [observaciones, setObservaciones] = useState('')
   const [expedient, setExpediente] = useState<Expediente[]>([]);
+  const [usuario, setUsuario] = useState<Usuario[]>([]);
 
-  const handleBuscar = async () => {
+const searchParams = useSearchParams(); //variable para recibir los parametros que vienen desde provider usuario
+   // Accediendo a los parámetros de la URL
+   const user = searchParams.get('us');
+  // const unidad_area = searchParams.get('unidad_area');
+
+  const cargarExpedientes = async () => {
+
     if (unidad.trim() === '') {
       alert('Por favor, ingrese una unidad area')
       return
@@ -34,29 +43,37 @@ export default function ListaExpedienteComponent() {
       obtenerExpedientePorUnidad(unidad) // Obtener historial
       setExpediente(data) // Guardar los datos del expediente
       console.log(expedient)
-     // cargarExpedientes()
-      //alert(' obtener expediente: ' )
     } catch (error) {
       alert('Error al obtener el historial del expediente: ' + error)
     }
   }
 
-  return (
+  const handleBuscar = async () => {
+    if (user.trim() === '') {
+      alert('Parametro de usuario vacio')
+      return
+    }
+    try {
+      const res = await fetch(`http://localhost:5000/users/${user}`)
+      const data = await res.json()
+      setUnidadArea(data.unidad_area) // Guardar los datos del expediente
+      cargarExpedientes();
+    } catch (error) {
+      alert('Error al obtener el historial del expediente: ' + error)
+    }
+  }
+
+ 
+
+    return (
     <div className="container mt-4">
-      <h2 className="text-center text-primary fw-bold">Historial de Expedientes</h2>
+      <h2 className="text-center text-primary fw-bold"> Listado de Expedientes Unidad({unidad})</h2>
 
       <div className="row justify-content-center mt-3">
-        <div className="col-md-6">
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Ingrese el número de expediente"
-              value={unidad}
-              onChange={(e) => setUnidadArea(e.target.value)}
-            />
+        <div className="col-md-12">
+          <div className="input-group">        
             <button className="btn btn-primary" onClick={handleBuscar}>
-              Buscar
+              Actualizar Expediente de la Unidad
             </button>
           </div>
         </div>

@@ -52,49 +52,6 @@ export default function ProviderExpediente({ children }: VistaReact) {
       alert('Error al obtener los expediente: ' + error)
     }
   }
-/*
-  async function buscarExpediente(expediente: Expediente) {
-    try {
-      let res;
-      if (id_expediente == 0) {
-        res = await fetch('http://localhost:5000/expedientes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            id_expediente: expediente.id_expediente,
-           // contrasena: usuario.contrasena
-          })
-        })
-      }
-      // Verificar si la respuesta es exitosa
-      if (!res || !res.ok) {
-        alert('Usuario no encontrado');
-        return;
-      }
-      if (res.status === 404) {
-        alert('Usuario no encontrado');
-        return;
-      }
-      if (res.status === 401) {
-        alert('Usuario no autorizado');
-        return;
-      }
-      const data = await res.json();
-
-      if (res.status === 200) {
-       // router.push("/listausuario"); // Redirigir si las credenciales son correctas
-        console.log('Usuario logueado:' + res.status, data);
-      }
-
-    } catch (error) {
-      console.error('Ocurrió un error al intentar logear al usuario:', error);
-      //  mostrar un mensaje
-      alert('Ocurrió un error al intentar iniciar sesión, por favor intenta nuevamente.');
-    }
-  }
-*/
   async function agregarExpediente(expediente: Expediente) {
     try {
       let res;

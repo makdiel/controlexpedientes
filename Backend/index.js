@@ -43,6 +43,33 @@ app.get("/users", async (req, res) => {
     res.status(500).json({ error: "Ocurrio un error en la peticion." });
   }
 });
+// validar de usuario con comparación simple de nombre de usuario
+app.get("/users/:nombre_usuario", async (req, res) => {
+  try {
+    // Validación básica para asegurar que el nombre de usuario no está vacío o no es inválido.
+    const { nombre_usuario } = req.params;
+    if (!nombre_usuario || nombre_usuario.trim() === "") {
+      return res.status(400).json({ mensaje: "El nombre de usuario es requerido." });
+    }
+
+    // Buscar el usuario en la base de datos.
+    const usuario = await Users.findOne({ where: { nombre_usuario } });
+
+    // Si no se encuentra el usuario, devolver un error 404.
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    // Si el usuario es encontrado, devolver los datos del usuario.
+    res.json(usuario);
+  
+  } catch (error) {
+    console.error("Error en la búsqueda de usuario:", error);
+
+    // Si ocurre un error inesperado, devolver un error 500.
+    res.status(500).json({ error: "Ocurrió un error en la autenticación." });
+  }
+});
 
 // Login de usuario con comparación simple de contraseña
 app.post("/users/login", async (req, res) => {
@@ -75,6 +102,8 @@ app.post("/users/login", async (req, res) => {
     res.status(500).json({ error: "Ocurrió un error en la autenticación." });
   }
 });
+
+
 
 //---------------------------------Expedientes-----------------------------------------//
 // Obtener expedientes

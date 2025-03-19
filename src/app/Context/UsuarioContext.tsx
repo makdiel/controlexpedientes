@@ -8,7 +8,6 @@ export const usuarioContext = createContext({
     logearUsuario: (usuario: Usuario) => {},
     actualizarUsuario: (id_usuario: number, nombre_usuario: string, contrasena: string, nombre_completo: string, unidad_area: string, administrador: boolean) => {},
     eliminarUsuario: (id_usuario: number) => {},
-
     id_usuario: 0,
     setId: (id_usuario: number) => {},
     nombre_usuario: '',

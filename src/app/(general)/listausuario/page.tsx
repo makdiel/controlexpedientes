@@ -14,13 +14,14 @@ export default function page() {
   const { expediente } = useExpedienteContext()
 
   //<ListaUsuarioComponent Usuarios={usuario}></ListaUsuarioComponent>
- // <HistorialDetalladoComponent></HistorialDetalladoComponent>
-   //   <HistorialExpedienteComponent></HistorialExpedienteComponent>
+  //  <ListaExpedienteComponent Expedientes={expediente}></ListaExpedienteComponent>
+
   return (
     <>
       
-       <ListaExpedienteComponent Expedientes={expediente}></ListaExpedienteComponent>
-    
+     
+      <HistorialDetalladoComponent></HistorialDetalladoComponent>
+      <HistorialExpedienteComponent></HistorialExpedienteComponent>
     </>
   )
 }
