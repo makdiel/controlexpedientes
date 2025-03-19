@@ -3,6 +3,7 @@ import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import { Usuario } from '../Models/Usuario'
 import { usuarioContext } from '../Context/UsuarioContext'
 import { useRouter } from 'next/navigation'
+//import { useRouter } from 'next/router';
 
 
 interface VistaReact {
@@ -72,7 +73,8 @@ export default function ProviderUsuario({ children }: VistaReact) {
       const data = await res.json();
 
       if (res.status === 200) {
-        router.push("/listausuario"); // Redirigir si las credenciales son correctas
+        router.push("/listaexpediente"); // Redirigir si las credenciales son correctas
+        //router.push({ pathname: '/listaexpediente', query: { param1: unidad_area },  });
         console.log('Usuario logueado:' + res.status, data);
       }
 

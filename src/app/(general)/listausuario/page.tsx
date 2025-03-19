@@ -5,16 +5,22 @@ import HistorialExpedienteComponent from '@/app/Components/HistorialExpedienteCo
 import { useUsuaarioContext } from '@/app/Provider/ProviderUsuario'
 import Link from 'next/link'
 import React from 'react'
+import ListaExpedienteComponent from '@/app/Components/ListaExpedienteComponent'
+import { useExpedienteContext } from '@/app/Provider/ProviderExpediente'
 
 export default function page() {
 
   const { usuario } = useUsuaarioContext()
+  const { expediente } = useExpedienteContext()
 
+  //<ListaUsuarioComponent Usuarios={usuario}></ListaUsuarioComponent>
+ // <HistorialDetalladoComponent></HistorialDetalladoComponent>
+   //   <HistorialExpedienteComponent></HistorialExpedienteComponent>
   return (
     <>
-      <ListaUsuarioComponent Usuarios={usuario}></ListaUsuarioComponent>
-      <HistorialDetalladoComponent></HistorialDetalladoComponent>
-      <HistorialExpedienteComponent></HistorialExpedienteComponent>
+      
+       <ListaExpedienteComponent Expedientes={expediente}></ListaExpedienteComponent>
+    
     </>
   )
 }
