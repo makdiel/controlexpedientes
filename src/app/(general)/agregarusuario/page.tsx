@@ -1,12 +1,12 @@
 'use client'
 import ListaUsuarioComponent from '@/app/Components/ListaUsuarioComponent'
 import { Usuario } from '@/app/Models/Usuario'
-import { useUsuaarioContext } from '@/app/Provider/ProviderUsuario'
+import { useUsuarioContext } from '@/app/Provider/ProviderUsuario'
 import React from 'react'
 
 export default function page() {
 
-  const {id_usuario,setId,nombre_usuario,setNombreUsuario,contrasena,setContrasena,nombre_completo,setNombreCompleto,unidad_area,setUnidadArea,administrador,setAdministrador, agregarUsuario,usuario}= useUsuaarioContext()
+  const {id_usuario,setId,nombre_usuario,setNombreUsuario,contrasena,setContrasena,nombre_completo,setNombreCompleto,unidad_area,setUnidadArea,administrador,setAdministrador, agregarUsuario,usuario}= useUsuarioContext()
 
   function crearUsuario(){
 
@@ -93,7 +93,7 @@ export default function page() {
 
           <button className='btn btn-success' onClick={crearUsuario}>Agregar /Actualizar Usuario</button>
 
-          <ListaUsuarioComponent usuarios={usuario}></ListaUsuarioComponent>
+          <ListaUsuarioComponent Usuarios={usuario}></ListaUsuarioComponent>
         </form>
 
     </div>
