@@ -2,7 +2,7 @@
 import React from 'react'
 import { Usuario } from '../Models/Usuario'
 import Link from 'next/link'
-import { useUsuaarioContext } from '../Provider/ProviderUsuario'
+import { useUsuarioContext } from '../Provider/ProviderUsuario'
 
 
 interface UsuarioLista{
@@ -12,7 +12,7 @@ interface UsuarioLista{
 export default function ListaUsuarioComponent({Usuarios}:UsuarioLista) {
 
   const {actualizarUsuario,eliminarUsuario,usuario,id_usuario,nombre_usuario,nombre_completo,contrasena,unidad_area,administrador,
-    setId,setContrasena,setNombreUsuario,setNombreCompleto,setUnidadArea,setAdministrador,logearUsuario} =useUsuaarioContext();
+    setId,setContrasena,setNombreUsuario,setNombreCompleto,setUnidadArea,setAdministrador,logearUsuario} =useUsuarioContext();
   /*
   if (Array.isArray(usuarios)) {
     usuarios.map((user:Usuario) => {

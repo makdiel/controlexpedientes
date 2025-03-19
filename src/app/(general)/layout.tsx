@@ -12,12 +12,12 @@ export default function  LayoutSecundario({
   return (
     <>
     
-    <ProviderUsuario>
+   
       <ProviderHistorial>
       <NavBar></NavBar>
       {children}
       </ProviderHistorial>
-    </ProviderUsuario>
+ 
  
    
       
