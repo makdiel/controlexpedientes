@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Page() {
   const router = useRouter();
-  const { nombre_usuario, setNombreUsuario, contrasena, setContrasena, logearUsuario, usuarioLogueado } = useUsuarioContext();
+  const { nombre_usuario, setNombreUsuario, contrasena, setContrasena, logearUsuario, usuarioLogueado,unidad_area, setUnidadArea } = useUsuarioContext();
 
   useEffect(() => {
     console.log('usuarioLogueado:', usuarioLogueado);
@@ -21,8 +21,10 @@ export default function Page() {
       alert('Por favor, complete todos los campos.');
       return;
     }
+    setNombreUsuario(nombre_usuario)
     await logearUsuario({ nombre_usuario, contrasena } as any);
   };
+ 
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">

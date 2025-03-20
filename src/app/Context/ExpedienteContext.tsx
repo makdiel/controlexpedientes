@@ -18,6 +18,7 @@ export const expedienteContext= createContext({
         observaciones:string
     ) =>{},
     obtenerExpedientePorUnidad: (Unidad_area: string) => {}, // Obtiene historial de un expediente específicando la unidad
+    cargarExpedientes : (expediente:Expediente[]) =>{},
     eliminarExpediente:(id_expediente:number)=>{},
     id_expediente:0,
     setIdExpediente:(id_expediente:number)=>{},

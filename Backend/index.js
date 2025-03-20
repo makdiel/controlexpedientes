@@ -29,6 +29,8 @@ app.listen(5000, () => {
   console.log("Servidor ejecutándose en puerto 5000");
 });
 
+
+
 //--------------------------------------Usuarios--------------------------------------//
 // Obtener usuarios
 app.get("/users", async (req, res) => {

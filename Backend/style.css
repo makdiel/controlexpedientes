@@ -1,0 +1,7 @@
+/* styles/globals.css o styles/CentralImage.module.css */
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la ventana */
+  }

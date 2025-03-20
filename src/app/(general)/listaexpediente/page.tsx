@@ -3,6 +3,8 @@ import ListaExpedienteComponent from '@/app/Components/ListaExpedienteComponent'
 import { useExpedienteContext } from '@/app/Provider/ProviderExpediente'
 import { useSearchParams } from 'next/navigation'; //me sirve para recibir parametros
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CentralImage from '@/app/Components/CentralImage'; //importar el componete que contiene el logo
+
 
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -17,7 +19,11 @@ export default function page() {
   //const unidad_area = searchParams.get('unidad_area');
   return (
     <>
+     
     <div className="container mt-5">
+    <div className="center-container">
+    <CentralImage /> 
+    </div>
       {/* Caja para mostrar los datos en la parte superior derecha 
       <h5 className="card-title">Datos del Usuario</h5>
       */}

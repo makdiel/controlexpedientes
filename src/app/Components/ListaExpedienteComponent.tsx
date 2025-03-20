@@ -5,6 +5,7 @@ import { useExpedienteContext } from '../Provider/ProviderExpediente'
 import { Expediente } from '../Models/Expediente'
 import { useSearchParams } from 'next/navigation'; //me sirve para recibir parametros
 import { Usuario } from '../Models/Usuario'
+import { useUsuarioContext } from '../Provider/ProviderUsuario'
 /*
 interface ExpedienteLista{
     Expedientes: Expediente[]
@@ -13,6 +14,7 @@ interface ExpedienteLista{
 //{Expedientes}:ExpedienteLista
 export default function ListaExpedienteComponent() {
   const { eliminarExpediente, actualizarExpediente,agregarExpediente,obtenerExpedientePorUnidad } = useExpedienteContext()
+ const {usuarioLogueado,nombre_usuario} = useUsuarioContext()
   const [id_expediente, setIdExpediente] = useState('')
   const [numeroExpediente, setNumeroExpediente] = useState('')
   const [nombre_establecimiento, setNombre_establecimiento] = useState('')
@@ -25,22 +27,19 @@ export default function ListaExpedienteComponent() {
   const [expedient, setExpediente] = useState<Expediente[]>([]);
   const [usuario, setUsuario] = useState<Usuario[]>([]);
 
-const searchParams = useSearchParams(); //variable para recibir los parametros que vienen desde provider usuario
+  const searchParams = useSearchParams(); //variable para recibir los parametros que vienen desde provider usuario
    // Accediendo a los parámetros de la URL
    const user = searchParams.get('us');
   // const unidad_area = searchParams.get('unidad_area');
 
   const cargarExpedientes = async () => {
-
     if (unidad.trim() === '') {
-      alert('Por favor, ingrese una unidad area')
+    //  alert('Por favor, ingrese una unidad area')
       return
     }
     try {
       const res = await fetch(`http://localhost:5000/expedientes/unidad/${unidad}`)
       const data = await res.json()
-      
-      obtenerExpedientePorUnidad(unidad) // Obtener historial
       setExpediente(data) // Guardar los datos del expediente
       console.log(expedient)
     } catch (error) {
@@ -49,7 +48,7 @@ const searchParams = useSearchParams(); //variable para recibir los parametros q
   }
 
   const handleBuscar = async () => {
-    if (user.trim() === '') {
+   if (user.trim() === '') {
       alert('Parametro de usuario vacio')
       return
     }
@@ -62,8 +61,28 @@ const searchParams = useSearchParams(); //variable para recibir los parametros q
       alert('Error al obtener el historial del expediente: ' + error)
     }
   }
+      const BuscarUsuario = async () => {
+       if (user.trim() === '') {
+         // alert('Parametro de usuario vacio')
+          return
+        }
+        try {
+          const res = await fetch(`http://localhost:5000/users/${user}`)
+          const data = await res.json()
+          setUnidadArea(data.unidad_area) // Guardar los datos del expediente
+        } catch (error) {
+          alert('Error al obtener el historial del expediente: ' + error)
+        }
+  }
 
- 
+
+  useEffect(() => {
+    if (user.trim() === '') {
+      return
+    }else{
+      BuscarUsuario();
+      }    
+  }, [expedient])
 
     return (
     <div className="container mt-4">

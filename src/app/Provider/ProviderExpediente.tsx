@@ -43,6 +43,8 @@ export default function ProviderExpediente({ children }: VistaReact) {
     }
   }
 
+  
+
   async function obtenerExpedientePorUnidad(unidad_area: string) {
     try {
       const res = await fetch(`http://localhost:5000/expedientes/unidad/${unidad_area}`)
