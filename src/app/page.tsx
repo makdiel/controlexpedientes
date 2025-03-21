@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useUsuarioContext } from './Provider/ProviderUsuario';
 import { useRouter } from 'next/navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CentralImage from './Components/CentralImage';
 
 export default function Page() {
   const router = useRouter();
@@ -27,8 +28,15 @@ export default function Page() {
  
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow p-4" style={{ maxWidth: '400px', width: '100%' }}>
+    <>
+    <div className="container mt-5">
+    <div className="center-container">
+     <CentralImage /> 
+     <h2 className="text-center mb-4">CONTROL DE EXPEDIENTES</h2>
+    <div className="container d-flex justify-content-center align-items-center min-vh-200">  
+      
+      <div className="card shadow p-4" style={{ maxWidth: '500px', width: '100%' }}>
+        
         <h2 className="text-center mb-4">Iniciar sesión</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -57,5 +65,8 @@ export default function Page() {
         </form>
       </div>
     </div>
+    </div>
+    </div>
+    </>
   );
 }

@@ -13,8 +13,8 @@ interface ExpedienteLista{
 }*/
 //{Expedientes}:ExpedienteLista
 export default function ListaExpedienteComponent() {
-  const { eliminarExpediente, actualizarExpediente,agregarExpediente,obtenerExpedientePorUnidad } = useExpedienteContext()
- const {usuarioLogueado,nombre_usuario} = useUsuarioContext()
+  const { eliminarExpediente, actualizarExpediente, agregarExpediente, obtenerExpedientePorUnidad } = useExpedienteContext()
+  const { usuarioLogueado, nombre_usuario } = useUsuarioContext()
   const [id_expediente, setIdExpediente] = useState('')
   const [numeroExpediente, setNumeroExpediente] = useState('')
   const [nombre_establecimiento, setNombre_establecimiento] = useState('')
@@ -28,13 +28,13 @@ export default function ListaExpedienteComponent() {
   const [usuario, setUsuario] = useState<Usuario[]>([]);
 
   const searchParams = useSearchParams(); //variable para recibir los parametros que vienen desde provider usuario
-   // Accediendo a los parámetros de la URL
-   const user = searchParams.get('us');
+  // Accediendo a los parámetros de la URL
+  const user = searchParams.get('us');
   // const unidad_area = searchParams.get('unidad_area');
 
   const cargarExpedientes = async () => {
     if (unidad.trim() === '') {
-    //  alert('Por favor, ingrese una unidad area')
+      //  alert('Por favor, ingrese una unidad area')
       return
     }
     try {
@@ -48,7 +48,7 @@ export default function ListaExpedienteComponent() {
   }
 
   const handleBuscar = async () => {
-   if (user.trim() === '') {
+    if (user.trim() === '') {
       alert('Parametro de usuario vacio')
       return
     }
@@ -61,39 +61,45 @@ export default function ListaExpedienteComponent() {
       alert('Error al obtener el historial del expediente: ' + error)
     }
   }
-      const BuscarUsuario = async () => {
-       if (user.trim() === '') {
-         // alert('Parametro de usuario vacio')
-          return
-        }
-        try {
-          const res = await fetch(`http://localhost:5000/users/${user}`)
-          const data = await res.json()
-          setUnidadArea(data.unidad_area) // Guardar los datos del expediente
-        } catch (error) {
-          alert('Error al obtener el historial del expediente: ' + error)
-        }
+  const BuscarUsuario = async () => {
+    if (user.trim() === '') {
+      // alert('Parametro de usuario vacio')
+      return
+    }
+    try {
+      const res = await fetch(`http://localhost:5000/users/${user}`)
+      const data = await res.json()
+      setUnidadArea(data.unidad_area) // Guardar los datos del expediente
+    } catch (error) {
+      alert('Error al obtener el historial del expediente: ' + error)
+    }
   }
 
 
   useEffect(() => {
     if (user.trim() === '') {
       return
-    }else{
+    } else {
       BuscarUsuario();
-      }    
+    }
   }, [expedient])
 
-    return (
+  return (
     <div className="container mt-4">
       <h2 className="text-center text-primary fw-bold"> Listado de Expedientes Unidad({unidad})</h2>
 
       <div className="row justify-content-center mt-3">
         <div className="col-md-12">
-          <div className="input-group">        
-            <button className="btn btn-primary" onClick={handleBuscar}>
-              Actualizar Expediente de la Unidad
-            </button>
+          <div className="input-group">
+            <div className="button-container">
+              <button className="btn btn-primary" onClick={handleBuscar}>
+                Actualizar Expediente de la Unidad
+              </button>
+              <button className="btn btn-primary" onClick={handleBuscar}>
+                Nuevo Expediente
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -110,11 +116,12 @@ export default function ListaExpedienteComponent() {
                 <th>Unidad Área Usuario</th>
                 <th>Fecha Creacion</th>
                 <th>Departamento</th>
-               
+                <th>Acciones</th>
+
               </tr>
             </thead>
             <tbody>
-              {expedient.map((item,index) => (
+              {expedient.map((item, index) => (
                 <tr key={item.id_expediente}>
                   <td>{index + 1}</td>
                   <td><strong>{item.numero_expediente}</strong></td>
@@ -123,7 +130,13 @@ export default function ListaExpedienteComponent() {
                   <td>{item.unidad_area || 'No asignado'}</td>
                   <td>{new Date(item.fecha_creacion).toLocaleDateString()}</td>
                   <td>{item.departamento}</td>
-                 
+                  <td>
+                  
+                   <>{/*
+                   <button type='button' className='btn btn-info btn-sm' onClick={() => actualizarExpediente(item.id_usuario, item.id_expediente, item.numero_expediente, item.nombre_establecimiento, item.region_sanitaria, item.unidad_area, item.departamento, item, estado, item.fecha_creacion)}>Editar</button> 
+                   */}</>  <button type='button' className='btn btn-danger btn-sm' onClick={() => eliminarExpediente(item.id_expediente)}>Eliminar</button>
+                  </td>
+
                 </tr>
               ))}
             </tbody>

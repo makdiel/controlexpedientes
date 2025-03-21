@@ -123,7 +123,7 @@ export default function ProviderExpediente({ children }: VistaReact) {
     departamento:string,
     unidad_area:string,
     estado:boolean,
-    fecha_creacion:Date,
+    fecha_creacion:string,
     id_Usuario:number,
     observaciones:string
 ){

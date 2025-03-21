@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const sequelize = require("./db/conexion"); // 📌 Importar conexión con la BD
 
+
 // 📌 Importar modelos
 const Users = require("./models/Users");
 const Expedientes = require("./models/Expedientes");
@@ -72,6 +73,7 @@ app.get("/users/:nombre_usuario", async (req, res) => {
     res.status(500).json({ error: "Ocurrió un error en la autenticación." });
   }
 });
+
 
 // Login de usuario con comparación simple de contraseña
 app.post("/users/login", async (req, res) => {
